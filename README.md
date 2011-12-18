@@ -8,7 +8,7 @@ Works in all common JavaScript frameworks: MooTools, JQuery, Prototype, Dogo.
 
 ## Simple Usage
 
-```javascript
+```html
 <div id="container">This is where the gist code will be loaded.</div>
 
 <script type="text/javascript" src="./gistex.js">
