@@ -8,13 +8,15 @@ Works in all common JavaScript frameworks: MooTools, JQuery, Prototype, Dogo.
 
 ## Simple Usage
 
-  <script type="text/javascript" src="./gistex.js">
-  <script type="text/javascript">
-  new Gistex(container,'https://gist.github.com/....js?file=...',{
-    onLoading : function() { ... },
-    onReady : function() { ... },
-    onFailure : function() { ... }
-  });
-  </script>
+```javascript
+<script type="text/javascript" src="./gistex.js">
+<script type="text/javascript">
+new Gistex(container,'https://gist.github.com/....js?file=...',{
+  onLoading : function() { ... },
+  onReady : function() { ... },
+  onFailure : function() { ... }
+});
+</script>
+```
 
 * More information can be found at http://yearofmoo.com/Gistex ...
