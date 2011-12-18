@@ -4,8 +4,7 @@ var Gistex = function() {
 
     options : {
       showOnReady : true,
-      iframeClassName : 'gist-iframe',
-      innerClassName : 'gist-stage',
+      className : 'gist-stage',
       timeout : 10000
     },
 
@@ -13,9 +12,9 @@ var Gistex = function() {
       if(typeof src == 'object') {
         src = self.prepareSrc(src.file,src.id);
       }
+
       self.container = container;
       self.src = src;
-
       self.mergeOptions(options);
     },
 
@@ -34,16 +33,16 @@ var Gistex = function() {
       self.loaded = false;
       self.cancelled = false;
       self.timedOut = false;
+      var id = self.getID();
+      Gistex.callbacks[id] = null;
+      Gistex.buffers[id] = null;
     },
 
     load : function() {
       self.resetVariables();
-      var container = self.getContainer();
-      container.innerHTML = '';
-
       self.onLoading();
-      var iframe = this.getIFrame();
-      self.injectIFrameHTML(iframe);
+      self.injectIFrameHTML();
+      self.startTimer();
     },
 
     getContainer : function() {
@@ -71,38 +70,17 @@ var Gistex = function() {
     },
 
     getInnerID : function() {
-      return this.getID() + '-inner';
+      return self.getID() + '-inner';
     },
 
-    getInnerElement : function() {
-      return self.innerElement;
-    },
-
-    getInnerElementHTML : function() {
-      return self.getInnerElement().innerHTML;
-    },
-
-    getGistElement : function() {
-      var elm, kids = self.getInnerElement().childNodes;
-
-      for(var i=0;i < kids.length;i++) {
-        var kid = kids[i];
-        var tag = kid.nodeName.toLowerCase();
-        var className = kid.className.toString() ? kid.className : '';
-        if(tag == 'div' && className == 'gist') {
-          elm = kid;
-          break;
-        }
-      }
-
-      return elm;
+    getInnerHTML : function() {
+      return self.innerElementHTML;
     },
 
     getIFrame : function() {
       if(!self.iframe) {
         var iframe = document.createElement('iframe');
         iframe.id = this.getID();
-        iframe.className = self.options.iframeClassName;
         iframe.style.width = 0;
         iframe.style.height = 0;
         iframe.style.border = 0;
@@ -114,49 +92,39 @@ var Gistex = function() {
       return self.iframe;
     },
 
-    injectIFrameHTML : function(iframe) {
+    injectIFrameHTML : function() {
+      var iframe = self.getIFrame();
       var id = self.getID();
-      var innerID = self.getInnerID();
-      var src = this.getSrc();
-
-      var opera = /Opera\/\d+\.\d+/.test(navigator.userAgent);
-
       var that = self;
+
       Gistex.callbacks[id] = function(id) {
-        if(!opera) {
-          that.innerElement = that.getIFrameDocument().getElementById(innerID);
-        }
         that.onIFrameLoaded.apply(that,[id]);
       };
 
-      self.startTimer();
+      Gistex.buffers[id] = function(content) {
+        if(!self.innerElementHTML) {
+          that.innerElementHTML = '';
+        }
+        that.innerElementHTML += content;
+      };
 
       var doc = this.getIFrameDocument();
+      var html = '<html>'+
+                 '<head>'+
+                 '<script type="text/javascript">' + 
+                 ' document.write = function(content) {'+
+                 '   window.parent.Gistex.buffers["'+id+'"](content);'+
+                 ' };' +
+                 '</script>' +
+                 '</head>' +
+                 '<body onload="window.parent.Gistex.callbacks[\'' + id + '\'](\'' + id + '\');">' +
+                 '<div id="'+self.getInnerID()+'">' +
+                 '<script type="text/javascript" src="'+self.getSrc()+'"></script>' + 
+                 '</div>' +
+                 '</body>' +
+                 '</html>';
+
       doc.open('text/html',false);
-
-      var html = '<html><head>';
-      if(opera) {
-
-        self.innerElementHTML = '';
-        self.getInnerElementHTML = function() {
-          return self.innerElementHTML;
-        }
-
-        Gistex.buffers[id] = function(content) {
-          self.innerElementHTML += content;
-        };
-
-        html += '<script type="text/javascript">' + 
-                'document.write = function(content) {'+
-                ' window.parent.Gistex.buffers["'+id+'"](content);'+
-                '};' +
-                '</script>';
-      }
-      html += '</head><body onload="window.parent.Gistex.callbacks[\'' + id + '\'](\'' + id + '\');">' +
-              '<div class="'+self.options.innerClassName+'" id="'+innerID+'">' +
-              "<script type='text/javascript' src='"+src+"'></script>" + 
-              '</div>' +
-              "</body></html>";
       doc.write(html);
       doc.close();
     },
@@ -170,20 +138,48 @@ var Gistex = function() {
         var iframe = document.getElementById(id);
         var container = self.getContainer();
         var doc = self.getIFrameDocument();
-        var html = this.getInnerElementHTML().replace(/^\s+|\s+$/g,"");
-        alert(html);
+        var html = this.getInnerHTML().replace(/^\s+|\s+$/g,"");
+
+        container.innerHTML = '';
 
         if(html.length > 0) {
-          container.innerHTML = '';
+          //setup the stylesheet
+          var ss = html.match(/<link.+?href=['"](.+?github.com.+?)['"]\/?>/);
+          html = html.replace(ss[0],'');
+          self.applyStyleSheet(ss[1]);
+
           var elm = document.createElement('div');
-          elm.className = self.options.innerClassName;
+          elm.className = self.options.className;
           elm.innerHTML = html;
           container.appendChild(elm);
+
           self.onReady();
         }
         else {
           self.onFailure();
         }
+
+        this.resetVariables();
+      }
+    },
+
+    applyStyleSheet : function(src) {
+
+      var head =document.getElementsByTagName('head')[0];
+      var sheets = head.getElementsByTagName('link');
+      var found = false;
+      for(var i=0;i<sheets.length;i++) {
+        if(sheets[i]=src==src){
+          break;
+        }
+      }	
+
+      if(!found) {
+        var sheet = document.createElement('link');
+        sheet.rel = 'stylesheet';
+        sheet.type = 'text/css';
+        sheet.href = src;
+        head.appendChild(sheet);
       }
     },
 
