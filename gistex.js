@@ -12,8 +12,14 @@ var Gistex = function() {
       if(typeof src == 'object') {
         src = self.prepareSrc(src.file,src.id);
       }
+      else {
+        var matches = src.match(/<script.+?src=['"](https?:\/\/gist.github.com\/.+?)['"]><\/script>/g);
+        if(matches && matches.length > 0) {
+          src = matches[1];
+        }
+      }
 
-      self.container = container;
+      self.container = typeof container == 'string' ? document.getElementById(container) : container;
       self.src = src;
       self.mergeOptions(options);
     },
