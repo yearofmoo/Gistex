@@ -13,7 +13,7 @@ var Gistex = function() {
         src = self.prepareSrc(src.file,src.id);
       }
       else {
-        var matches = src.match(/<script.+?src=['"](https?:\/\/gist.github.com\/.+?)['"]><\/script>/g);
+        var matches = src.match(/<script.+?src=['"](https?:\/\/gist.github.com\/.+?)['"].+?><\/script>/g);
         if(matches && matches.length > 0) {
           src = matches[1];
         }
