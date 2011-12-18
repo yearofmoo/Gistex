@@ -39,7 +39,9 @@ var Gistex = function() {
     },
 
     load : function() {
-      self.hide();
+      if(this.options.showOnReady) {
+        self.hide();
+      }
       self.resetVariables();
       self.onLoading();
       self.injectIFrameHTML();
