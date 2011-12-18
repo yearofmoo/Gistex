@@ -1,10 +1,12 @@
-Gistex is a Vanilla JavaScript wrapper for loading Github Gist snippets on the fly with AJAX.
+**Gistex**
+
+*Gistex is a Vanilla JavaScript wrapper for loading Github Gist snippets on the fly with AJAX.*
 
 Supported by all browsers IE6-IE9, Chrome, Opera, Safari and Firefox.
 
 Works in all common JavaScript frameworks: MooTools, JQuery, Prototype, Dogo.
 
-Simple Usage
+*Simple Usage:*
 
 <script type="text/javascript" src="./gistex.js">
 <script type="text/javascript">
