@@ -153,9 +153,11 @@ var Gistex = function() {
           elm.innerHTML = html;
           container.appendChild(elm);
 
+          self.onComplete();
           self.onReady();
         }
         else {
+          self.onComplete();
           self.onFailure();
         }
 
@@ -211,6 +213,10 @@ var Gistex = function() {
         self.endTimer();
         self.onCancel();
       }
+    },
+
+    onComplete : function() {
+      self.fire('complete');
     },
 
     onCancel : function() {
