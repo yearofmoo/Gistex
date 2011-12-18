@@ -161,10 +161,6 @@ var Gistex = function() {
       doc.close();
     },
 
-    showContents : function() {
-      alert(self.getIFrameDocument().body.innerHTML);
-    },
-
     onIFrameLoaded : function(id) {
       if(!self.timedOut && !self.cancelled) {
 
@@ -175,6 +171,7 @@ var Gistex = function() {
         var container = self.getContainer();
         var doc = self.getIFrameDocument();
         var html = this.getInnerElementHTML().replace(/^\s+|\s+$/g,"");
+        alert(html);
 
         if(html.length > 0) {
           container.innerHTML = '';
