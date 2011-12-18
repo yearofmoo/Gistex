@@ -1,0 +1,36 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+<title>Github</title> 
+</head> 
+
+<body> 
+<div id="wrapper">
+  <div id="container">
+    Click link to load gist
+  </div>
+  <a href="#" id="a">Load</a>
+</div>
+<script type="text/javascript" src="gistex.js"></script>
+<script type="text/javascript">
+
+  var a = document.getElementById('a');
+  a.addEventListener('click',function(event) {
+    event.preventDefault();
+    var container = document.getElementById('container');
+    var src = 'https://gist.github.com/1489384.js?file=gistfile1.rb';
+    var gh = new Gistex(container,src,{
+      onReady : function() {
+        alert('ready');
+      },
+      onLoading : function() {
+        container.innerHTML = '<img src="./loading.gif" /> loading...';
+      }
+    });
+
+    gh.load();
+  });
+
+</script>
+</body>
+</html> 
