@@ -1,4 +1,4 @@
-var Gistex = function() {
+var $gistex, Gistex = function() {
 
   var self, C = {
 
@@ -267,6 +267,14 @@ var Gistex = function() {
   return C;
 
 };
+
+$gistex = function(container,url,onReady) {
+  var gs = new Gistex(container,url,{
+    onReady : onReady
+  });
+  gs.load();
+  return gs;
+}
 
 Gistex.buffers = {};
 Gistex.callbacks = {};
