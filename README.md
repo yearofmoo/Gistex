@@ -10,7 +10,7 @@ Works in all common JavaScript frameworks: MooTools, JQuery, Prototype, Dogo.
 
 ```html
 <div id="container">This is where the gist code will be loaded.</div>
-<script type="text/javascript" src="./gistex.js"></script>
+<script type="text/javascript" src="./Source/Gistex.js"></script>
 <script type="text/javascript">
 var container = document.getElementById('container');
 var gs = new Gistex(container,'https://gist.github.com/....js?file=...',{
